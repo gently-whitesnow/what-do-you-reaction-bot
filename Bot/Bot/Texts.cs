@@ -1,3 +1,5 @@
+using System;
+
 namespace Bot;
 
 public static class Texts
@@ -11,6 +13,6 @@ public static class Texts
 
     private static readonly string[] Book = new[]
     {
-        "a", "b", "c", "b", "c", "b", "c", "b", "c", "b", "c", "b", "c"
+        "Когда тебе бабушка в детстве подарила тысячу рублей и ты решаешь, что с ними сделать"
     };
 }

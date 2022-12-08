@@ -1,8 +1,7 @@
-﻿// See https://aka.ms/new-console-template for more information
-
+﻿using System;
 using Bot;
 
+Console.WriteLine("Bot starting ...");
 
-var conf = new Configuration();
-
-Console.WriteLine(conf.ReadSection<string>("botToken"));
+var bot = new TelegramBot(new Configuration().ReadSection<string>("botToken"));
+await bot.Execute();
