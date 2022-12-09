@@ -51,7 +51,7 @@ public static class RoomManager
     public static string CreateRoom(User user)
     {
         var roomName = (StaticStorage.RoomsCount).ToString();
-        StaticStorage.Rooms.Add(roomName, new Room(roomName, user));
+        StaticStorage.Rooms.TryAdd(roomName, new Room(roomName, user));
         StaticStorage.RoomsCount += 13;
         return roomName;
     }
@@ -59,7 +59,7 @@ public static class RoomManager
     public static void LeaveRoom(User user)
     {
         var room = GetRoom(user.RoomName);
-        room.Users.Remove(user);
+        room?.Users.Remove(user);
         user.RoomName = null;
     }
 }

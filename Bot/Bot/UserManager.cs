@@ -12,7 +12,7 @@ public static class UserManager
         StaticStorage.UsersPlayed++;
         
         var user = new User(userId, userName);
-        StaticStorage.Users.Add(userId, user);
+        StaticStorage.Users.TryAdd(userId, user);
         return user;
     }
 }

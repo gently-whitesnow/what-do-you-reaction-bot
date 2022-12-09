@@ -13,7 +13,7 @@ namespace Bot;
 
 public class TelegramBot
 {
-    private ITelegramBotClient bot;
+    private readonly ITelegramBotClient bot;
 
     public TelegramBot(string botToken)
     {
@@ -22,11 +22,15 @@ public class TelegramBot
 
     public Task  Execute()
     {
-        Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result.ToString());
+        Console.WriteLine("Запущен бот " + bot.GetMeAsync().Result);
 
         var receiverOptions = new ReceiverOptions
         {
-            AllowedUpdates = { }, // receive all update types
+            AllowedUpdates = new UpdateType[]
+            {
+                UpdateType.Message,
+                UpdateType.CallbackQuery,
+            }
         };
         bot.ReceiveAsync(
             HandleUpdateAsync,
@@ -40,9 +44,8 @@ public class TelegramBot
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update,
         CancellationToken cancellationToken)
     {
-        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(update));
 
-        // Сюда попадает все что прислал пользователь
+        // Get all messages
         if (update.Type == UpdateType.Message)
         {
             var message = update.Message;
@@ -90,6 +93,7 @@ public class TelegramBot
             return;
         }
 
+        // Get all callbacks
         if (update.Type == UpdateType.CallbackQuery)
         {
             var query = update.CallbackQuery;
@@ -107,6 +111,4 @@ public class TelegramBot
         // Некоторые действия
         Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(exception));
     }
-
-    
 }
