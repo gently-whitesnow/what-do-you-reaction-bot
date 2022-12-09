@@ -2,6 +2,9 @@ using System;
 
 namespace Bot;
 
+/// <summary>
+/// Тут должны быть рандомные текста для игр
+/// </summary>
 public static class Texts
 {
     private static readonly Random Rand = new();

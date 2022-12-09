@@ -16,43 +16,11 @@ public static class RoomManager
         return r;
     }
 
-    public static async Task SendAll(ITelegramBotClient botClient, Room room, string message)
-    {
-        foreach (var user in room.Users)
-        {
-            if (!StaticStorage.Users.TryGetValue(user.ChatId, out var u))
-                continue;
-            await botClient.SendTextMessageAsync(u.ChatId, message, ParseMode.Html);
-        }
-    }
-
-    public static async Task SendAllSticker(ITelegramBotClient botClient, Room room, string userName, string sticker)
-    {
-        foreach (var user in room.Users)
-        {
-            if (!StaticStorage.Users.TryGetValue(user.ChatId, out var u))
-                continue;
-            await botClient.SendTextMessageAsync(u.ChatId, text: $"<b>{userName}</b>",
-                ParseMode.Html);
-            await botClient.SendStickerAsync(u.ChatId, sticker);
-        }
-    }
-
-    public static async Task SendAllInlineBlocks(ITelegramBotClient botClient, Room room)
-    {
-        foreach (var user in room.Users)
-        {
-            if (!StaticStorage.Users.TryGetValue(user.ChatId, out var u))
-                continue;
-            await InlineSender.SendRoomInlineKeyboard(botClient, user.ChatId);
-        }
-    }
-
     public static string CreateRoom(User user)
     {
-        var roomName = (StaticStorage.RoomsCount).ToString();
+        var roomName = (StaticStorage.RoomIds).ToString();
         StaticStorage.Rooms.TryAdd(roomName, new Room(roomName, user));
-        StaticStorage.RoomsCount += 13;
+        StaticStorage.RoomIds += 13;
         return roomName;
     }
 
@@ -61,5 +29,39 @@ public static class RoomManager
         var room = GetRoom(user.RoomName);
         room?.Users.Remove(user);
         user.RoomName = null;
+    }
+    
+    public static async Task EnterRoom(ITelegramBotClient botClient, string roomName,User user)
+    {
+        var roomFromMessage = RoomManager.GetRoom(roomName);
+        // Не получилось найти комнату
+        if (roomFromMessage == null)
+        {
+            await botClient.SendTextMessageAsync(user.ChatId, "Комната с таким названием не найдена");
+            await InlineSender.SendHelloInlineKeyboard(botClient, user.ChatId);
+            return;
+        }
+
+        if (roomFromMessage.Users.Contains(user) && user.RoomName == roomFromMessage.RoomName)
+        {
+            await botClient.SendTextMessageAsync(user.ChatId, $"Вы уже в комнате {roomFromMessage.RoomName}");
+        }
+        else
+        {
+            // Получилось
+            user.RoomName = roomFromMessage.RoomName;
+            roomFromMessage.Users.Add(user);
+            await botClient.SendTextMessageAsync(user.ChatId, "Вы вошли в комнату");
+        }
+        if (string.IsNullOrEmpty(roomFromMessage.GuessSentence))
+        {
+
+            await InlineSender.SendRoomInlineKeyboard(botClient, user.ChatId);
+        }
+        else
+        {
+            await botClient.SendTextMessageAsync(user.ChatId,
+                $"Игра идет, выбери стикер описывающий фразу: \n<b>{roomFromMessage.GuessSentence}</b>", ParseMode.Html);
+        }
     }
 }

@@ -61,7 +61,7 @@ public static class InlineReceiver
                     return;
                 }
 
-                await TextManager.EnterRoom(botClient, "99", user);
+                await RoomManager.EnterRoom(botClient, "99", user);
                 break;
             }
             case Buttons.RandomPhrase:
@@ -74,7 +74,7 @@ public static class InlineReceiver
                     return;
                 }
 
-                await TextManager.SetPhrase(botClient, room, user, Texts.GetRandom());
+                await PhraseManager.SetPhrase(botClient, room, user, Texts.GetRandom());
                 break;
             }
             case Buttons.WhoInRoom:

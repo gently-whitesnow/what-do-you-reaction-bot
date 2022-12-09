@@ -2,7 +2,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Bot.Inline;
 using Bot.Models;
-using Bot.Room;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using User = Bot.Models.User;
@@ -20,8 +19,9 @@ public static class StickerManager
             await InlineSender.SendRoomInlineKeyboard(botClient, user.ChatId);
             return;
         }
-        //logging
+        // logging
         StaticStorage.StickersSent++;
+        
         var savedSticker = room.Medias.FirstOrDefault(d => d.UserChatId == user.ChatId);
         if (savedSticker != null)
         {
@@ -29,8 +29,9 @@ public static class StickerManager
             await botClient.SendTextMessageAsync(user.ChatId, $"Перезаписал твой стикер, ждем остальных участников!");
             return;
         }
+        
         room.Medias.Add(new Media(user.ChatId,user.UserName,sticker.FileId));
         await botClient.SendTextMessageAsync(user.ChatId, $"Я запомнил твой стикер, ждем остальных участников!");
-        await RoomManager.SendAll(botClient, room, $"<b>{user.UserName}</b> - стикер получен");
+        await Broadcaster.SendAll(botClient, room, $"<b>{user.UserName}</b> - стикер получен");
     }
 }

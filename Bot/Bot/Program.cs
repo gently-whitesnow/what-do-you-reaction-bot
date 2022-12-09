@@ -3,5 +3,5 @@ using Bot;
 
 Console.WriteLine("Bot starting ...");
 
-var bot = new TelegramBot(new Configuration().ReadSection<string>("botToken"));
+var bot = new TelegramBot(Configuration.ReadSection<string>("botToken"));
 await bot.Execute();

@@ -1,16 +1,14 @@
-using System;
 using Microsoft.Extensions.Configuration;
 
 namespace Bot;
 
-public class Configuration
+public static class Configuration
 {
-    public T ReadSection<T>(string sectionName)
+    public static T ReadSection<T>(string sectionName)
     {
-        // var environment = Environment.GetEnvironmentVariable("NETCORE_ENVIRONMENT");
-        var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-        var configurationRoot = builder.Build();
-        
-        return configurationRoot.GetSection(sectionName).Get<T>();
+        return new ConfigurationBuilder()
+            .AddJsonFile("appsettings.json", false, true)
+            .Build()
+            .GetSection(sectionName).Get<T>();
     }
 }
