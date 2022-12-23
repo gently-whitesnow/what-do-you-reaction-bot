@@ -12,7 +12,9 @@ namespace Bot;
 public static class Broadcaster
 {
     private static int SecondsRoundDuration = 60;
-    private static readonly string SadnessStickerId = "CAACAgIAAxkBAAOhY5JNX9-5e46CM8_qfHgSO9xikOUAAkgAA61lvBSAc4rPFC0AAdwrBA";
+
+    private static readonly string SadnessStickerId =
+        "CAACAgIAAxkBAAOhY5JNX9-5e46CM8_qfHgSO9xikOUAAkgAA61lvBSAc4rPFC0AAdwrBA";
 
     public static ITelegramBotClient IncludeBroadcaster(this ITelegramBotClient botClient)
     {
@@ -26,7 +28,8 @@ public static class Broadcaster
                     if (string.IsNullOrEmpty(room.GuessSentence))
                         continue;
                     var seconds = DateTime.Now.Subtract(room.DateRoundStarted).Seconds;
-                    if (seconds >= SecondsRoundDuration || room.Medias.Count == room.Users.Count)
+                    var minutes = DateTime.Now.Subtract(room.DateRoundStarted).Minutes;
+                    if (seconds + minutes * 60 >= SecondsRoundDuration || room.Medias.Count == room.Users.Count)
                     {
                         await RoundConclusionAsync(botClient, room);
                     }
@@ -42,7 +45,7 @@ public static class Broadcaster
 
         return botClient;
     }
-    
+
     public static async Task SendAll(ITelegramBotClient botClient, Room.Room room, string message)
     {
         foreach (var user in room.Users)
@@ -53,7 +56,8 @@ public static class Broadcaster
         }
     }
 
-    public static async Task SendAllSticker(ITelegramBotClient botClient, Room.Room room, string userName, string sticker)
+    public static async Task SendAllSticker(ITelegramBotClient botClient, Room.Room room, string userName,
+        string sticker)
     {
         foreach (var user in room.Users)
         {
@@ -77,7 +81,7 @@ public static class Broadcaster
 
     private static async Task RoundConclusionAsync(ITelegramBotClient botClient, Room.Room room)
     {
-        await SendAll(botClient, room,$"Загаданная фраза:\n<b>{room.GuessSentence}</b>\n" );
+        await SendAll(botClient, room, $"Загаданная фраза:\n<b>{room.GuessSentence}</b>\n");
         room.GuessSentence = null;
         // Стикеров нет
         if (room.Medias.Count == 0)
@@ -86,9 +90,10 @@ public static class Broadcaster
             await SendAllInlineBlocks(botClient, room);
             return;
         }
+
         //logging
         StaticStorage.RoundsCount++;
-        
+
         // Стикеры есть, рассылка всех стикеров
         foreach (var media in room.Medias)
         {
