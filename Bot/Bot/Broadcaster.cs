@@ -92,7 +92,7 @@ public static class Broadcaster
         }
 
         //logging
-        StaticStorage.RoundsCount++;
+        Interlocked.Increment(ref StaticStorage.RoundsCount);
 
         // Стикеры есть, рассылка всех стикеров
         foreach (var media in room.Medias)

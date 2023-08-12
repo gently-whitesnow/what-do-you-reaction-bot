@@ -1,4 +1,5 @@
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Bot.Inline;
 using Bot.Models;
@@ -20,7 +21,7 @@ public static class StickerManager
             return;
         }
         // logging
-        StaticStorage.StickersSent++;
+        Interlocked.Increment(ref StaticStorage.StickersSent);
         
         var savedSticker = room.Medias.FirstOrDefault(d => d.UserChatId == user.ChatId);
         if (savedSticker != null)

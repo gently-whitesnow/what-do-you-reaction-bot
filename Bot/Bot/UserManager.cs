@@ -1,3 +1,4 @@
+using System.Threading;
 using Bot.Models;
 
 namespace Bot;
@@ -10,7 +11,7 @@ public static class UserManager
             return member;
         
         //logging
-        StaticStorage.UsersPlayed++;
+        Interlocked.Increment(ref StaticStorage.UsersPlayed);
         
         var user = new User(userId, telegramUser.Username ?? telegramUser.FirstName + " " + telegramUser.LastName);
         StaticStorage.Users.TryAdd(userId, user);
